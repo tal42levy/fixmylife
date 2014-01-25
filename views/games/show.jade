@@ -1,0 +1,20 @@
+extends ../layout
+
+block content
+  h1 Game
+  .row
+    .col-lg-5#shots
+  input#gameId(type="hidden", value=gameId)
+
+block scripts
+  script(src="/common/js/kinetic.js")
+  script(src="/js/half-court.js")
+
+  :coffeescript
+    $ ->
+      gameId = $('#gameId').val()
+      court  = new HalfCourt('#shots')
+
+      $.get "/games/#{gameId}/shots.json", (data) ->
+        console.log data
+        court.plot(data.rows)

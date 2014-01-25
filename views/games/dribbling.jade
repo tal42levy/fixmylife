@@ -1,0 +1,97 @@
+extends ../common/layout
+block content
+  .row
+    h1
+      = away.name + " @ " + home.name
+      small
+        = " on " 
+        = [ game.date.getFullYear(), game.date.getMonth()+1, game.date.getDate() ].join('-')
+
+    ul.nav.nav-tabs
+      li.active: a(onclick="choose(0)")= away.name
+      li: a(onclick="choose(1)")= home.name
+
+    #summaries
+      each team in [ away, home ]
+        - var sum = dribbling.summary[team.id]
+        - var posses = dribbling.possessions
+        - var teamId = team.id.toString()
+        div(style="display: none")
+          h3 Summaries
+          h5.text-right
+            span(style="color: blue") Avg. EFG 
+            = " / "
+            span(style="color: orange") Avg. SEFG 
+            = " / "
+            span(style="color: green") Fouls 
+            = " / "
+            span(style="color: red") Turnovers
+            = " / "
+            span Chances
+          table.sortable-theme-bootstrap.table-bordered.table-striped(data-sortable=true, style="width: 100%")
+            thead
+              tr
+                th Player
+                th Dri
+                th Chances w/ Touch
+                th Dri / Chance
+                th(data-sortable="false") 0 Dribbles w/ Touch
+                th(data-sortable="false") 1-4 Dribbles
+                th(data-sortable="false") 5-9 Dribbles
+                th(data-sortable="false") 10+ Dribbles
+            tbody
+              each psum, playerId in sum
+                tr
+                  td= players[playerId].name()
+                  td: .text-right= psum.dribbles
+                  td: .text-right= psum.chances
+                  td: .text-right= psum.chances ? (psum.dribbles / psum.chances).toFixed(1) : "---"
+                  each bin, i in psum.bins
+                    td.stuff
+                      - var efg = ((bin.points/2)/bin.shots) * 100
+                      span(style="color: blue")= efg ? efg.toFixed(0) : '---'
+                      - var sefg = bin.sefg / bin.shots
+                      span(style="color: orange")= sefg ? sefg.toFixed(0) : '---'
+                      span(style="color: green")= bin.fouls
+                      span(style="color: red")= bin.turnovers
+                      span= bin.chances
+
+          h3 Breakdown by Chance
+          table.sortable-theme-bootstrap.table-bordered.table-striped(data-sortable=true, style="width: 100%")
+            thead
+              tr
+                th Started At
+                th Total Dribbles
+                th(data-sortable="false") Players
+                th Num Players
+                th Ended In
+                th Shot Quality
+            each chances in posses
+              - chances = chances.sort(function (a, b) { return a.timeInt - b.timeInt })
+              each chance in chances
+                if chance.teamId.toString() == teamId
+                  tr
+                    td(data-value=chance.timeInt)= time(chance.period, chance.start)
+                    td: .text-right= chance.total
+                    td= chance.text
+                    td= Object.keys(chance.dribbles).length
+                    td= chance.term
+                    td: .text-right(style="color: orange")= chance.sefg ? chance.sefg.toFixed(0) : '---'
+                    
+       
+
+block scripts          
+  script(src="/common/js/sortable/sortable.min.js")
+  :coffeescript
+    $ ->
+      $('#summaries > div').eq(0).show()
+
+    window.choose = (idx) ->
+      $('#summaries > div').eq(idx).show().siblings().hide()
+      $('ul.nav-tabs > li').eq(idx).addClass('active').siblings().removeClass('active')
+
+block styles          
+  link(rel='stylesheet', href='/common/css/sortable/sortable-theme-bootstrap.css')
+  style
+    .stuff span { display: inline-block; width: 30px }
+    .stuff { white-space: nowrap; }

@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1 Users
+  table.table.table-bordered
+    each u in users
+      - var usn = u.username
+      tr
+        td
+          a(href="/users/" + usn)= usn
+        td
+          = u.name
+        td
+          = u.isSuper

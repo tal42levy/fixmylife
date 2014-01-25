@@ -1,0 +1,28 @@
+extends ../common/layout 
+block content
+  h1 Games
+  table.table.table-bordered
+    - var d = null
+    - var n = 0
+    each g in games
+      - var d2 = showTime(g.date)
+      if d2 != d
+        - n++
+        - d = d2 
+        if n > 1
+          tr
+            th(colspan=3) &nbsp;
+        tr
+          th.active(colspan=3)= d
+      - var pre = "/games/" + g.code
+      - var colors = g.home_score < g.away_score ? [ 'red', 'green' ] : [ 'green', 'red' ]
+      tr
+        td
+          = teams[g.away_team_id].name
+          &nbsp;
+          span(style="color:" + colors[1])= g.away_score
+        td
+          = teams[g.home_team_id].name
+          &nbsp;
+          span(style="color:" + colors[0])= g.home_score
+        td: a(href=pre + "/dribbling") Dribbling

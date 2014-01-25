@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  - var usn = user.username
+  h1= usn + " (" + user.name + ")"
+
+  h3 Teams
+  table.table.table-bordered
+    each team in user.teams
+      - var id = team._id
+      tr
+        td
+          a(href="/teams/"+id)= team.name
+        td
+          = team.type
+        td
+          = team.league
+
+  h3 Create Team
+  form(action="/users/"+usn+"/createTeam", method="post")
+    div.form-group
+      label Name
+      input.form-control(name="name")
+    div.form-group
+      label Type
+      input.form-control(name="type")
+    button.btn.btn-default(type="submit") Submit

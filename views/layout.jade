@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    title="Test"
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css')
+    block styles
+    style.
+      body { padding-top: 70px }
+
+  body
+    nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      div.navbar-header
+        a.navbar-brand="Tal"
+    div.container
+      block content
+
+  script(src="/common/js/EventEmitter.js")
+  script(src="/common/js/jquery.js")
+  script(src="/common/js/async.js")
+  block scripts
+
